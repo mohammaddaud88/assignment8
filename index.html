@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Country and State Selector</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Select Country and State</h1>
+        <div class="select-container">
+            <label for="country">Select Country:</label>
+            <select id="country" onchange="fetchStates()">
+                <option value="">--Select Country--</option>
+            </select>
+        </div>
+        <div class="select-container">
+            <label for="state">Select State:</label>
+            <select id="state">
+                <option value="">--Select State--</option>
+            </select>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+    fetchCountries();
+});
+
+const fetchCountries = async () => {
+    try {
+        const response = await fetch('https://restcountries.com/v3.1/all');
+        const countries = await response.json();
+        populateCountries(countries);
+    } catch (error) {
+        console.error('Error fetching countries:', error);
+    }
+};
+
+const populateCountries = (countries) => {
+    const countrySelect = document.getElementById('country');
+    countries.forEach(country => {
+        const option = document.createElement('option');
+        option.value = country.cca2; // Use country code
+        option.textContent = country.name.common;
+        countrySelect.appendChild(option);
+    });
+};
+
+const fetchStates = async () => {
+    const countrySelect = document.getElementById('country');
+    const countryCode = countrySelect.value;
+    if (countryCode) {
+        try {
+            const response = await fetch(`https://api.sampleapis.com/fake/states/${countryCode}`);
+            const states = await response.json();
+            populateStates(states);
+        } catch (error) {
+            console.error('Error fetching states:', error);
+        }
+    } else {
+        clearStates();
+    }
+};
+
+const populateStates = (states) => {
+    const stateSelect = document.getElementById('state');
+    clearStates();
+    states.forEach(state => {
+        const option = document.createElement('option');
+        option.value = state.name;
+        option.textContent = state.name;
+        stateSelect.appendChild(option);
+    });
+};
+
+const clearStates = () => {
+    const stateSelect = document.getElementById('state');
+    stateSelect.innerHTML = '<option value="">--Select State--</option>';
+};
+
+    </script>
+</body>
+</html>
